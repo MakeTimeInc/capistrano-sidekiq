@@ -8,7 +8,7 @@ namespace :load do
     set :sidekiq_timeout, -> { 10 }
     set :sidekiq_role, -> { :app }
     set :sidekiq_processes, -> { 1 }
-    set :sidekiq_kill_signal, -> { 'TERM' }
+    set :sidekiq_kill_signal, -> { '-TERM' }
     set :sidekiq_options_per_process, -> { nil }
     set :sidekiq_user, -> { nil }
     # Rbenv, Chruby, and RVM integration
@@ -65,7 +65,7 @@ namespace :sidekiq do
   def stop_sidekiq(pid_file)
     if fetch(:stop_sidekiq_in_background, fetch(:sidekiq_run_in_background))
       if fetch(:sidekiq_use_signals)
-        background 'kill -', fetch(:sidekiq_kill_signal), " `cat #{pid_file}`"
+        background :kill, fetch(:sidekiq_kill_signal), " `cat #{pid_file}`"
       else
         background :sidekiqctl, 'stop', "#{pid_file}", fetch(:sidekiq_timeout)
       end
